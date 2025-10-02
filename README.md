@@ -24,6 +24,8 @@ Semana 5 (30 octubre – 5 noviembre): Desarrollo inicial de la app en Streamlit
 
 Semana 6 (6–12 noviembre): Ampliación de la app con visualizaciones y recomendaciones.
 
+Data Base used: https://www.kaggle.com/datasets/arezaei81/hotel-bookingcvs?resource=download
+
 Semana 7 (13–19 noviembre): Conexión a base de datos SQLite (registro de predicciones).
 
 Semana 8 (20–26 noviembre): Pruebas, mejoras de interfaz y despliegue de la aplicación en una URL accesible (ej. Streamlit Cloud o Heroku).
