@@ -52,41 +52,54 @@ def layout_exploration(df: pd.DataFrame) -> html.Div:
         [
             html.Div(
                 [
-                    html.Div(
-                        [
-                            html.Label("Variable numérica (eje X):"),
-                            dcc.Dropdown(
-                                id="numeric-col",
-                                options=[
-                                    {"label": pretty_label(c), "value": c}
-                                    for c in numeric_cols
-                                ],
-                                value=numeric_cols[0],
-                                clearable=False,
-                                className="dash-dropdown",
-                            ),
-                        ],
-                        style={"width": "48%", "display": "inline-block"},
+                    html.H2(
+                        "Exploración de datos",
+                        style={"textAlign": "left"},
+                    ),
+                    html.P(
+                        "Elige una variable numérica y una categórica para explorar el comportamiento de las cancelaciones",
+                        className="app-subtitle",
+                        style={"textAlign": "left"},
                     ),
                     html.Div(
                         [
-                            html.Label("Variable categórica (agrupación):"),
-                            dcc.Dropdown(
-                                id="cat-col",
-                                options=[
-                                    {"label": pretty_label(c), "value": c}
-                                    for c in categorical_cols
+                            html.Div(
+                                [
+                                    html.Label("Variable numérica (eje X):"),
+                                    dcc.Dropdown(
+                                        id="numeric-col",
+                                        options=[
+                                            {"label": pretty_label(c), "value": c}
+                                            for c in numeric_cols
+                                        ],
+                                        value=numeric_cols[0],
+                                        clearable=False,
+                                        className="dash-dropdown",
+                                    ),
                                 ],
-                                value=categorical_cols[0],
-                                clearable=False,
-                                className="dash-dropdown",
+                                style={"width": "48%", "display": "inline-block"},
                             ),
-                        ],
-                        style={
-                            "width": "48%",
-                            "display": "inline-block",
-                            "float": "right",
-                        },
+                            html.Div(
+                                [
+                                    html.Label("Variable categórica (agrupación):"),
+                                    dcc.Dropdown(
+                                        id="cat-col",
+                                        options=[
+                                            {"label": pretty_label(c), "value": c}
+                                            for c in categorical_cols
+                                        ],
+                                        value=categorical_cols[0],
+                                        clearable=False,
+                                        className="dash-dropdown",
+                                    ),
+                                ],
+                                style={
+                                    "width": "48%",
+                                    "display": "inline-block",
+                                    "float": "right",
+                                },
+                            ),
+                        ]
                     ),
                 ],
                 className="card",
@@ -118,10 +131,14 @@ def layout_predictor(df: pd.DataFrame) -> html.Div:
         [
             html.Div(
                 [
-                    html.H2("Predicción de cancelación de reserva"),
+                    html.H2(
+                        "Predicción de cancelación de reserva",
+                        style={"textAlign": "left"},
+                    ),
                     html.P(
-                        "Introduce los datos de una reserva y pulsa «Predecir».",
+                        "Introduce los datos de una reserva y pulsa «Predecir»",
                         className="app-subtitle",
+                        style={"textAlign": "left"},
                     ),
                 ],
                 className="card",
@@ -311,14 +328,24 @@ def layout_recommendations(df: pd.DataFrame) -> html.Div:
             .rename(columns={"index": "variable", "is_canceled": "importance"})
         )
         corr_df["pretty_name"] = corr_df["variable"].apply(pretty_label)
+
         fig_corr = px.bar(
             corr_df,
             x="pretty_name",
             y="importance",
+            color="pretty_name",  # colores distintos por barra
+            color_discrete_sequence=px.colors.qualitative.Set2,
             title="Factores numéricos más asociados a la cancelación",
         )
-        fig_corr.update_yaxes(title="Importancia (|correlación| con la cancelación)")
+        fig_corr.update_yaxes(
+            title="Importancia (|correlación| con la cancelación)",
+            title_standoff=15,
+        )
         fig_corr.update_xaxes(tickangle=-35)
+        fig_corr.update_layout(
+            margin=dict(l=80, r=20, t=60, b=80),
+            showlegend=False,
+        )
     else:
         fig_corr = px.bar()
 
@@ -328,11 +355,14 @@ def layout_recommendations(df: pd.DataFrame) -> html.Div:
             # Bloque 1: dónde se concentran
             html.Div(
                 [
-                    html.H2("¿Dónde se concentran las cancelaciones?"),
+                    html.H2(
+                        "¿Dónde se concentran las cancelaciones?",
+                        style={"textAlign": "left"},
+                    ),
                     html.P(
-                        "Analizamos los segmentos de mercado y la estacionalidad "
-                        "para entender en qué tipo de reservas se concentran más cancelaciones.",
+                        "Analizamos los segmentos de mercado y la estacionalidad para entender en qué tipo de reservas se concentran más cancelaciones",
                         className="app-subtitle",
+                        style={"textAlign": "left"},
                     ),
                     html.Div(
                         [
@@ -356,11 +386,14 @@ def layout_recommendations(df: pd.DataFrame) -> html.Div:
             # Bloque 2: factores numéricos
             html.Div(
                 [
-                    html.H2("Factores que más influyen en la cancelación"),
+                    html.H2(
+                        "Factores que más influyen en la cancelación",
+                        style={"textAlign": "left"},
+                    ),
                     html.P(
-                        "Tomamos las variables numéricas del dataset y medimos su correlación "
-                        "con la cancelación para identificar los principales drivers de riesgo.",
+                        "Tomamos las variables numéricas del dataset y medimos su correlación con la cancelación para identificar los principales drivers de riesgo",
                         className="app-subtitle",
+                        style={"textAlign": "left"},
                     ),
                     dcc.Graph(figure=fig_corr),
                 ],
@@ -369,11 +402,14 @@ def layout_recommendations(df: pd.DataFrame) -> html.Div:
             # Bloque 3: flipcards por tipo de cliente
             html.Div(
                 [
-                    html.H2("Guía rápida por tipo de cliente"),
+                    html.H2(
+                        "Guía rápida por tipo de cliente",
+                        style={"textAlign": "left"},
+                    ),
                     html.P(
-                        "Pasa el ratón por cada tarjeta para ver recomendaciones "
-                        "específicas para cada tipo de cliente.",
+                        "Pasa el ratón por cada tarjeta para ver recomendaciones específicas para cada tipo de cliente",
                         className="app-subtitle",
+                        style={"textAlign": "left"},
                     ),
                     html.Div(
                         [
@@ -386,21 +422,19 @@ def layout_recommendations(df: pd.DataFrame) -> html.Div:
                                                 [
                                                     html.H3("Cliente Transient"),
                                                     html.P(
-                                                        "Reservas individuales, estancias cortas "
-                                                        "y flexibilidad alta."
+                                                        "Reservas individuales, estancias cortas y flexibilidad alta"
                                                     ),
                                                 ],
-                                                className="flip-card-face",
+                                                className="flip-card-face flip-card-front",
                                             ),
                                             html.Div(
                                                 [
                                                     html.H3("Recomendación"),
                                                     html.P(
-                                                        "Ofrecer upselling a tarifas semirrestrictivas "
-                                                        "y recordatorios de check-in para asegurar la estancia."
+                                                        "Ofrecer upselling a tarifas semirrestrictivas y recordatorios de check-in para asegurar la estancia"
                                                     ),
                                                 ],
-                                                className="flip-card-face",
+                                                className="flip-card-face flip-card-back",
                                             ),
                                         ],
                                         className="flip-card-inner gradient-blue",
@@ -417,21 +451,19 @@ def layout_recommendations(df: pd.DataFrame) -> html.Div:
                                                 [
                                                     html.H3("Clientes Group"),
                                                     html.P(
-                                                        "Reservas de grupos, alto impacto "
-                                                        "cuando cancelan."
+                                                        "Reservas de grupos, alto impacto cuando cancelan"
                                                     ),
                                                 ],
-                                                className="flip-card-face",
+                                                className="flip-card-face flip-card-front",
                                             ),
                                             html.Div(
                                                 [
                                                     html.H3("Recomendación"),
                                                     html.P(
-                                                        "Pedir depósitos parciales y fijar "
-                                                        "fechas límite claras para cambios en el grupo."
+                                                        "Pedir depósitos parciales y fijar fechas límite claras para cambios en el grupo"
                                                     ),
                                                 ],
-                                                className="flip-card-face",
+                                                className="flip-card-face flip-card-back",
                                             ),
                                         ],
                                         className="flip-card-inner gradient-purple",
@@ -448,21 +480,19 @@ def layout_recommendations(df: pd.DataFrame) -> html.Div:
                                                 [
                                                     html.H3("Cliente Corporate"),
                                                     html.P(
-                                                        "Empresas con acuerdos recurrentes "
-                                                        "y menor tasa de cancelación."
+                                                        "Empresas con acuerdos recurrentes y menor tasa de cancelación"
                                                     ),
                                                 ],
-                                                className="flip-card-face",
+                                                className="flip-card-face flip-card-front",
                                             ),
                                             html.Div(
                                                 [
                                                     html.H3("Recomendación"),
                                                     html.P(
-                                                        "Diseñar acuerdos de cancelación flexibles, "
-                                                        "pero con visibilidad de demanda para revenue."
+                                                        "Diseñar acuerdos de cancelación flexibles pero con visibilidad de demanda para revenue"
                                                     ),
                                                 ],
-                                                className="flip-card-face",
+                                                className="flip-card-face flip-card-back",
                                             ),
                                         ],
                                         className="flip-card-inner gradient-green",
@@ -479,22 +509,19 @@ def layout_recommendations(df: pd.DataFrame) -> html.Div:
                                                 [
                                                     html.H3("Segmento Online TA"),
                                                     html.P(
-                                                        "Reservas hechas en agencias online, "
-                                                        "alto volumen y cancelación."
+                                                        "Reservas hechas en agencias online, alto volumen y cancelación"
                                                     ),
                                                 ],
-                                                className="flip-card-face",
+                                                className="flip-card-face flip-card-front",
                                             ),
                                             html.Div(
                                                 [
                                                     html.H3("Recomendación"),
                                                     html.P(
-                                                        "Controlar inventario en OTAs, limitar "
-                                                        "tarifas totalmente reembolsables y usar "
-                                                        "ofertas no reembolsables en picos de demanda."
+                                                        "Controlar inventario en OTAs, limitar tarifas totalmente reembolsables y usar ofertas no reembolsables en picos de demanda"
                                                     ),
                                                 ],
-                                                className="flip-card-face",
+                                                className="flip-card-face flip-card-back",
                                             ),
                                         ],
                                         className="flip-card-inner gradient-orange",
@@ -511,11 +538,14 @@ def layout_recommendations(df: pd.DataFrame) -> html.Div:
             # Bloque 4: otros patrones de riesgo
             html.Div(
                 [
-                    html.H2("Patrones de reserva con mayor riesgo de cancelación"),
+                    html.H2(
+                        "Patrones de reserva con mayor riesgo de cancelación",
+                        style={"textAlign": "left"},
+                    ),
                     html.P(
-                        "Además del tipo de cliente, algunos patrones de reserva "
-                        "concentran más probabilidad de cancelación.",
+                        "Además del tipo de cliente, algunos patrones de reserva concentran más probabilidad de cancelación",
                         className="app-subtitle",
+                        style={"textAlign": "left"},
                     ),
                     html.Div(
                         [
@@ -528,21 +558,19 @@ def layout_recommendations(df: pd.DataFrame) -> html.Div:
                                                 [
                                                     html.H3("Lead time muy alto"),
                                                     html.P(
-                                                        "Reservas hechas con mucha antelación."
+                                                        "Reservas hechas con mucha antelación"
                                                     ),
                                                 ],
-                                                className="flip-card-face",
+                                                className="flip-card-face flip-card-front",
                                             ),
                                             html.Div(
                                                 [
                                                     html.H3("Recomendación"),
                                                     html.P(
-                                                        "Programar recordatorios automáticos "
-                                                        "y ofrecer upgrades a tarifas menos flexibles "
-                                                        "cerca de la fecha de llegada."
+                                                        "Programar recordatorios automáticos y ofrecer upgrades a tarifas menos flexibles cerca de la fecha de llegada"
                                                     ),
                                                 ],
-                                                className="flip-card-face",
+                                                className="flip-card-face flip-card-back",
                                             ),
                                         ],
                                         className="flip-card-inner gradient-teal",
@@ -557,25 +585,21 @@ def layout_recommendations(df: pd.DataFrame) -> html.Div:
                                         [
                                             html.Div(
                                                 [
-                                                    html.H3(
-                                                        "ADR bajo + muchas noches"
-                                                    ),
+                                                    html.H3("ADR bajo + muchas noches"),
                                                     html.P(
-                                                        "Reservas largas a precio muy bajo."
+                                                        "Reservas largas a precio muy bajo"
                                                     ),
                                                 ],
-                                                className="flip-card-face",
+                                                className="flip-card-face flip-card-front",
                                             ),
                                             html.Div(
                                                 [
                                                     html.H3("Recomendación"),
                                                     html.P(
-                                                        "Revisar las condiciones, aplicar "
-                                                        "mínimos de estancia y políticas de "
-                                                        "cancelación más estrictas."
+                                                        "Revisar las condiciones, aplicar mínimos de estancia y políticas de cancelación más estrictas"
                                                     ),
                                                 ],
-                                                className="flip-card-face",
+                                                className="flip-card-face flip-card-back",
                                             ),
                                         ],
                                         className="flip-card-inner gradient-pink",
@@ -590,24 +614,21 @@ def layout_recommendations(df: pd.DataFrame) -> html.Div:
                                         [
                                             html.Div(
                                                 [
-                                                    html.H3(
-                                                        "Muchas cancelaciones previas"
-                                                    ),
+                                                    html.H3("Muchas cancelaciones previas"),
                                                     html.P(
-                                                        "Clientes con historial de cancelar a menudo."
+                                                        "Clientes con historial de cancelar a menudo"
                                                     ),
                                                 ],
-                                                className="flip-card-face",
+                                                className="flip-card-face flip-card-front",
                                             ),
                                             html.Div(
                                                 [
                                                     html.H3("Recomendación"),
                                                     html.P(
-                                                        "Solicitar prepago parcial o garantía "
-                                                        "adicional en futuras reservas."
+                                                        "Solicitar prepago parcial o garantía adicional en futuras reservas"
                                                     ),
                                                 ],
-                                                className="flip-card-face",
+                                                className="flip-card-face flip-card-back",
                                             ),
                                         ],
                                         className="flip-card-inner gradient-yellow",
@@ -635,7 +656,7 @@ def create_layout(df: pd.DataFrame) -> html.Div:
                 [
                     html.H1("CancelGuard", className="header-title"),
                     html.P(
-                        "Predice cancelaciones de reservas y explora tus datos hoteleros.",
+                        "Predice cancelaciones de reservas y explora tus datos hoteleros",
                         className="header-subtitle",
                     ),
                 ],
@@ -800,7 +821,7 @@ def register_callbacks(app, df: pd.DataFrame, ml_model):
             pred, prob = model_module.predict_cancellation(ml_model, data)
         except Exception:
             msg = html.P(
-                "Error al generar la predicción.",
+                "Error al generar la predicción",
                 style={"color": "red"},
             )
             return (
@@ -822,8 +843,7 @@ def register_callbacks(app, df: pd.DataFrame, ml_model):
         warning = None
         if prob >= 0.6:
             warning = html.Div(
-                "⚠️ Esta reserva tiene alta probabilidad de cancelarse. "
-                "Consulta la pestaña «Recomendaciones» para estrategias de reducción.",
+                "⚠️ Esta reserva tiene alta probabilidad de cancelarse. Consulta la pestaña «Recomendaciones» para estrategias de reducción",
                 className="alert-banner",
             )
 
