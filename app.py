@@ -2,21 +2,35 @@
 import dash
 from src import etl, graphics, model
 
-# 1. Cargar datos
-df = etl.load_data()
 
-# 2. Cargar modelo (si existe)
-ml_model = model.load_model()
+def create_app():
+    print("➡️ Cargando datos...")
+    df = etl.load_data()
+    print("✅ Datos cargados:", df.shape)
 
-# 3. Crear app Dash
-app = dash.Dash(__name__)
-server = app.server  # necesario para Render/gunicorn
+    print("➡️ Entrenando / cargando modelo...")
+    ml_model = model.load_model()
+    print("✅ Modelo listo.")
 
-# 4. Layout
-app.layout = graphics.create_layout(df)
+    print("➡️ Creando app de Dash...")
+    app = dash.Dash(__name__)
+    app.title = "CancelGuard"
 
-# 5. Callbacks (le pasamos también el modelo)
-graphics.register_callbacks(app, df, ml_model)
+    print("➡️ Creando layout...")
+    app.layout = graphics.create_layout(df)
+    print("✅ Layout creado.")
+
+    print("➡️ Registrando callbacks...")
+    graphics.register_callbacks(app, df, ml_model)
+    print("✅ Callbacks registrados.")
+
+    return app
+
+
+app = create_app()
+server = app.server  # para despliegues futuros
+
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    print("🚀 Levantando servidor en http://127.0.0.1:8060 ...")
+    app.run_server(debug=False, port=8060)
