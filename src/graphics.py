@@ -7,11 +7,11 @@ import pandas as pd
 
 from . import model as model_module
 
-# Tema blanco limpio para todos los gráficos
 pio.templates.default = "plotly_white"
 
-
-# === Mapeo de nombres técnicos -> nombres legibles ===
+# -------------------------------------------------
+# Mapeo de nombres técnicos -> legibles
+# -------------------------------------------------
 COLUMN_LABELS = {
     "is_canceled": "Reserva cancelada",
     "lead_time": "Antelación de la reserva (días)",
@@ -38,13 +38,12 @@ COLUMN_LABELS = {
 
 
 def pretty_label(colname: str) -> str:
-    """Devuelve un nombre legible para una columna."""
     return COLUMN_LABELS.get(colname, colname.replace("_", " ").capitalize())
 
 
-# ======================================================================
-#  Layout pestaña EXPLORACIÓN
-# ======================================================================
+# -------------------------------------------------
+# Pestaña EXPLORACIÓN
+# -------------------------------------------------
 def layout_exploration(df: pd.DataFrame) -> html.Div:
     numeric_cols = df.select_dtypes(include="number").columns
     categorical_cols = df.select_dtypes(exclude="number").columns
@@ -103,11 +102,10 @@ def layout_exploration(df: pd.DataFrame) -> html.Div:
     )
 
 
-# ======================================================================
-#  Layout pestaña PREDICCIÓN
-# ======================================================================
+# -------------------------------------------------
+# Pestaña PREDICCIÓN
+# -------------------------------------------------
 def layout_predictor(df: pd.DataFrame) -> html.Div:
-
     mean_lead_time = int(df["lead_time"].mean()) if "lead_time" in df.columns else 0
     mean_total_nights = (
         int((df["stays_in_weekend_nights"] + df["stays_in_week_nights"]).mean())
@@ -128,153 +126,128 @@ def layout_predictor(df: pd.DataFrame) -> html.Div:
                 ],
                 className="card",
             ),
-
-            # Formulario de 2 columnas
             html.Div(
                 [
+                    # Columna izquierda
                     html.Div(
                         [
-                            # Columna izquierda
-                            html.Div(
-                                [
-                                    html.Label("Antelación de la reserva (días):"),
-                                    dcc.Input(
-                                        id="input-lead-time",
-                                        type="number",
-                                        value=mean_lead_time,
-                                        step=1,
-                                        className="dash-input",
-                                    ),
-
-                                    html.Label("Noches totales:"),
-                                    dcc.Input(
-                                        id="input-total-nights",
-                                        type="number",
-                                        value=mean_total_nights,
-                                        step=1,
-                                        className="dash-input",
-                                    ),
-
-                                    html.Label("Precio medio diario (ADR):"),
-                                    dcc.Input(
-                                        id="input-adr",
-                                        type="number",
-                                        value=round(mean_adr, 2),
-                                        step=1,
-                                        className="dash-input",
-                                    ),
-
-                                    html.Label("Peticiones especiales:"),
-                                    dcc.Input(
-                                        id="input-special-requests",
-                                        type="number",
-                                        value=0,
-                                        step=1,
-                                        className="dash-input",
-                                    ),
-                                ],
-                                className="predict-column",
+                            html.Label("Antelación de la reserva (días):"),
+                            dcc.Input(
+                                id="input-lead-time",
+                                type="number",
+                                value=mean_lead_time,
+                                step=1,
+                                className="dash-input",
                             ),
-
-                            # Columna derecha
-                            html.Div(
-                                [
-                                    html.Label("Tipo de hotel:"),
-                                    dcc.Dropdown(
-                                        id="input-hotel",
-                                        options=[
-                                            {"label": h, "value": h}
-                                            for h in sorted(df["hotel"].dropna().unique())
-                                        ],
-                                        value=df["hotel"].dropna().unique()[0],
-                                        clearable=False,
-                                        className="dash-dropdown",
-                                    ),
-
-                                    html.Label("Tipo de depósito:"),
-                                    dcc.Dropdown(
-                                        id="input-deposit-type",
-                                        options=[
-                                            {"label": d, "value": d}
-                                            for d in sorted(
-                                                df["deposit_type"].dropna().unique()
-                                            )
-                                        ],
-                                        value=df["deposit_type"].dropna().unique()[0],
-                                        clearable=False,
-                                        className="dash-dropdown",
-                                    ),
-
-                                    html.Label("Tipo de cliente:"),
-                                    dcc.Dropdown(
-                                        id="input-customer-type",
-                                        options=[
-                                            {"label": c, "value": c}
-                                            for c in sorted(
-                                                df["customer_type"].dropna().unique()
-                                            )
-                                        ],
-                                        value=df["customer_type"].dropna().unique()[0],
-                                        clearable=False,
-                                        className="dash-dropdown",
-                                    ),
-
-                                    html.Label("Segmento de mercado:"),
-                                    dcc.Dropdown(
-                                        id="input-market-segment",
-                                        options=[
-                                            {"label": m, "value": m}
-                                            for m in sorted(
-                                                df["market_segment"].dropna().unique()
-                                            )
-                                        ],
-                                        value=df["market_segment"].dropna().unique()[0],
-                                        clearable=False,
-                                        className="dash-dropdown",
-                                    ),
-
-                                    html.Label("Mes de llegada:"),
-                                    dcc.Dropdown(
-                                        id="input-arrival-month",
-                                        options=[
-                                            {"label": m, "value": m}
-                                            for m in sorted(
-                                                df["arrival_date_month"]
-                                                .dropna()
-                                                .unique()
-                                            )
-                                        ],
-                                        value=df["arrival_date_month"]
-                                        .dropna()
-                                        .unique()[0],
-                                        clearable=False,
-                                        className="dash-dropdown",
-                                    ),
-                                ],
-                                className="predict-column",
+                            html.Label("Noches totales:"),
+                            dcc.Input(
+                                id="input-total-nights",
+                                type="number",
+                                value=mean_total_nights,
+                                step=1,
+                                className="dash-input",
+                            ),
+                            html.Label("Precio medio diario (ADR):"),
+                            dcc.Input(
+                                id="input-adr",
+                                type="number",
+                                value=round(mean_adr, 2),
+                                step=1,
+                                className="dash-input",
+                            ),
+                            html.Label("Peticiones especiales:"),
+                            dcc.Input(
+                                id="input-special-requests",
+                                type="number",
+                                value=0,
+                                step=1,
+                                className="dash-input",
                             ),
                         ],
-                        className="predict-row",
+                        className="predict-column",
+                    ),
+                    # Columna derecha
+                    html.Div(
+                        [
+                            html.Label("Tipo de hotel:"),
+                            dcc.Dropdown(
+                                id="input-hotel",
+                                options=[
+                                    {"label": h, "value": h}
+                                    for h in sorted(df["hotel"].dropna().unique())
+                                ],
+                                value=df["hotel"].dropna().unique()[0],
+                                clearable=False,
+                                className="dash-dropdown",
+                            ),
+                            html.Label("Tipo de depósito:"),
+                            dcc.Dropdown(
+                                id="input-deposit-type",
+                                options=[
+                                    {"label": d, "value": d}
+                                    for d in sorted(
+                                        df["deposit_type"].dropna().unique()
+                                    )
+                                ],
+                                value=df["deposit_type"].dropna().unique()[0],
+                                clearable=False,
+                                className="dash-dropdown",
+                            ),
+                            html.Label("Tipo de cliente:"),
+                            dcc.Dropdown(
+                                id="input-customer-type",
+                                options=[
+                                    {"label": c, "value": c}
+                                    for c in sorted(
+                                        df["customer_type"].dropna().unique()
+                                    )
+                                ],
+                                value=df["customer_type"].dropna().unique()[0],
+                                clearable=False,
+                                className="dash-dropdown",
+                            ),
+                            html.Label("Segmento de mercado:"),
+                            dcc.Dropdown(
+                                id="input-market-segment",
+                                options=[
+                                    {"label": m, "value": m}
+                                    for m in sorted(
+                                        df["market_segment"].dropna().unique()
+                                    )
+                                ],
+                                value=df["market_segment"].dropna().unique()[0],
+                                clearable=False,
+                                className="dash-dropdown",
+                            ),
+                            html.Label("Mes de llegada:"),
+                            dcc.Dropdown(
+                                id="input-arrival-month",
+                                options=[
+                                    {"label": m, "value": m}
+                                    for m in sorted(
+                                        df["arrival_date_month"].dropna().unique()
+                                    )
+                                ],
+                                value=df["arrival_date_month"].dropna().unique()[0],
+                                clearable=False,
+                                className="dash-dropdown",
+                            ),
+                        ],
+                        className="predict-column",
                     ),
                 ],
-                className="card",
+                className="card predict-row",
             ),
-
-            # Botones + Predicción
             html.Div(
                 [
-                    html.Div(
-                        [
-                            html.Button(
-                                "Predecir", id="btn-predict", n_clicks=0
-                            ),
-                            html.Button(
-                                "Resetear", id="btn-reset", n_clicks=0
-                            ),
-                        ],
-                        className="predict-buttons",
+                    html.Button("Predecir", id="btn-predict", n_clicks=0),
+                    html.Button(
+                        "Resetear",
+                        id="btn-reset",
+                        n_clicks=0,
+                        style={"marginLeft": "12px"},
                     ),
-                    html.Div(id="prediction-output", style={"marginTop": "16px"}),
+                    html.Div(id="prediction-output"),
                 ],
                 className="card",
             ),
@@ -282,11 +255,12 @@ def layout_predictor(df: pd.DataFrame) -> html.Div:
     )
 
 
-# ======================================================================
-#  Layout pestaña RECOMENDACIONES
-# ======================================================================
+# -------------------------------------------------
+# Pestaña RECOMENDACIONES
+# -------------------------------------------------
 def layout_recommendations(df: pd.DataFrame) -> html.Div:
-
+    # ---- gráficos estáticos con df ----
+    # 1) tasa de cancelación por segmento
     if {"market_segment", "is_canceled"}.issubset(df.columns):
         seg = (
             df.groupby("market_segment")["is_canceled"]
@@ -294,33 +268,356 @@ def layout_recommendations(df: pd.DataFrame) -> html.Div:
             .reset_index()
             .sort_values("is_canceled", ascending=False)
         )
-        seg["cancel_rate_pct"] = (seg["is_canceled"] * 100).round(1)
-        top_seg = seg.head(3)
-        bullets_segments = [
-            html.Li(
-                f"{row['market_segment']}: {row['cancel_rate_pct']}% de cancelaciones"
-            )
-            for _, row in top_seg.iterrows()
-        ]
+        seg["cancel_rate_pct"] = seg["is_canceled"] * 100
+        fig_seg = px.bar(
+            seg,
+            x="market_segment",
+            y="cancel_rate_pct",
+            title="Segmentos con mayor tasa de cancelación",
+        )
+        fig_seg.update_yaxes(title="Tasa de cancelación")
+        fig_seg.update_xaxes(title="Segmento de mercado", tickangle=-25)
     else:
-        bullets_segments = [html.Li("No hay datos suficientes.")]
+        fig_seg = px.bar()
 
+    # 2) estacionalidad por mes
+    if {"arrival_date_month", "is_canceled"}.issubset(df.columns):
+        month = (
+            df.groupby("arrival_date_month")["is_canceled"]
+            .mean()
+            .reset_index()
+            .sort_values("arrival_date_month")
+        )
+        month["cancel_rate_pct"] = month["is_canceled"] * 100
+        fig_month = px.line(
+            month,
+            x="arrival_date_month",
+            y="cancel_rate_pct",
+            markers=True,
+            title="Estacionalidad de la cancelación por mes de llegada",
+        )
+        fig_month.update_yaxes(title="Tasa de cancelación")
+        fig_month.update_xaxes(title="Mes de llegada", tickangle=-25)
+    else:
+        fig_month = px.line()
+
+    # 3) correlación numéricas con cancelación
+    if "is_canceled" in df.columns:
+        num_cols = df.select_dtypes(include="number")
+        corr = num_cols.corr()["is_canceled"].drop("is_canceled")
+        corr_abs = corr.abs().sort_values(ascending=False).head(7)
+        corr_df = (
+            corr_abs.reset_index()
+            .rename(columns={"index": "variable", "is_canceled": "importance"})
+        )
+        corr_df["pretty_name"] = corr_df["variable"].apply(pretty_label)
+        fig_corr = px.bar(
+            corr_df,
+            x="pretty_name",
+            y="importance",
+            title="Factores numéricos más asociados a la cancelación",
+        )
+        fig_corr.update_yaxes(title="Importancia (|correlación| con la cancelación)")
+        fig_corr.update_xaxes(tickangle=-35)
+    else:
+        fig_corr = px.bar()
+
+    # ---- layout ----
     return html.Div(
         [
+            # Bloque 1: dónde se concentran
             html.Div(
                 [
-                    html.H2("Recomendaciones basadas en datos"),
+                    html.H2("¿Dónde se concentran las cancelaciones?"),
                     html.P(
-                        "Acciones sugeridas para reducir cancelaciones.",
+                        "Analizamos los segmentos de mercado y la estacionalidad "
+                        "para entender en qué tipo de reservas se concentran más cancelaciones.",
                         className="app-subtitle",
+                    ),
+                    html.Div(
+                        [
+                            html.Div(
+                                dcc.Graph(figure=fig_seg),
+                                style={"width": "48%", "display": "inline-block"},
+                            ),
+                            html.Div(
+                                dcc.Graph(figure=fig_month),
+                                style={
+                                    "width": "48%",
+                                    "display": "inline-block",
+                                    "float": "right",
+                                },
+                            ),
+                        ]
                     ),
                 ],
                 className="card",
             ),
+            # Bloque 2: factores numéricos
             html.Div(
                 [
-                    html.H3("Segmentos más problemáticos"),
-                    html.Ul(bullets_segments),
+                    html.H2("Factores que más influyen en la cancelación"),
+                    html.P(
+                        "Tomamos las variables numéricas del dataset y medimos su correlación "
+                        "con la cancelación para identificar los principales drivers de riesgo.",
+                        className="app-subtitle",
+                    ),
+                    dcc.Graph(figure=fig_corr),
+                ],
+                className="card",
+            ),
+            # Bloque 3: flipcards por tipo de cliente
+            html.Div(
+                [
+                    html.H2("Guía rápida por tipo de cliente"),
+                    html.P(
+                        "Pasa el ratón por cada tarjeta para ver recomendaciones "
+                        "específicas para cada tipo de cliente.",
+                        className="app-subtitle",
+                    ),
+                    html.Div(
+                        [
+                            # Transient
+                            html.Div(
+                                [
+                                    html.Div(
+                                        [
+                                            html.Div(
+                                                [
+                                                    html.H3("Cliente Transient"),
+                                                    html.P(
+                                                        "Reservas individuales, estancias cortas "
+                                                        "y flexibilidad alta."
+                                                    ),
+                                                ],
+                                                className="flip-card-face",
+                                            ),
+                                            html.Div(
+                                                [
+                                                    html.H3("Recomendación"),
+                                                    html.P(
+                                                        "Ofrecer upselling a tarifas semirrestrictivas "
+                                                        "y recordatorios de check-in para asegurar la estancia."
+                                                    ),
+                                                ],
+                                                className="flip-card-face",
+                                            ),
+                                        ],
+                                        className="flip-card-inner gradient-blue",
+                                    )
+                                ],
+                                className="flip-card",
+                            ),
+                            # Group
+                            html.Div(
+                                [
+                                    html.Div(
+                                        [
+                                            html.Div(
+                                                [
+                                                    html.H3("Clientes Group"),
+                                                    html.P(
+                                                        "Reservas de grupos, alto impacto "
+                                                        "cuando cancelan."
+                                                    ),
+                                                ],
+                                                className="flip-card-face",
+                                            ),
+                                            html.Div(
+                                                [
+                                                    html.H3("Recomendación"),
+                                                    html.P(
+                                                        "Pedir depósitos parciales y fijar "
+                                                        "fechas límite claras para cambios en el grupo."
+                                                    ),
+                                                ],
+                                                className="flip-card-face",
+                                            ),
+                                        ],
+                                        className="flip-card-inner gradient-purple",
+                                    )
+                                ],
+                                className="flip-card",
+                            ),
+                            # Corporate
+                            html.Div(
+                                [
+                                    html.Div(
+                                        [
+                                            html.Div(
+                                                [
+                                                    html.H3("Cliente Corporate"),
+                                                    html.P(
+                                                        "Empresas con acuerdos recurrentes "
+                                                        "y menor tasa de cancelación."
+                                                    ),
+                                                ],
+                                                className="flip-card-face",
+                                            ),
+                                            html.Div(
+                                                [
+                                                    html.H3("Recomendación"),
+                                                    html.P(
+                                                        "Diseñar acuerdos de cancelación flexibles, "
+                                                        "pero con visibilidad de demanda para revenue."
+                                                    ),
+                                                ],
+                                                className="flip-card-face",
+                                            ),
+                                        ],
+                                        className="flip-card-inner gradient-green",
+                                    )
+                                ],
+                                className="flip-card",
+                            ),
+                            # Online TA
+                            html.Div(
+                                [
+                                    html.Div(
+                                        [
+                                            html.Div(
+                                                [
+                                                    html.H3("Segmento Online TA"),
+                                                    html.P(
+                                                        "Reservas hechas en agencias online, "
+                                                        "alto volumen y cancelación."
+                                                    ),
+                                                ],
+                                                className="flip-card-face",
+                                            ),
+                                            html.Div(
+                                                [
+                                                    html.H3("Recomendación"),
+                                                    html.P(
+                                                        "Controlar inventario en OTAs, limitar "
+                                                        "tarifas totalmente reembolsables y usar "
+                                                        "ofertas no reembolsables en picos de demanda."
+                                                    ),
+                                                ],
+                                                className="flip-card-face",
+                                            ),
+                                        ],
+                                        className="flip-card-inner gradient-orange",
+                                    )
+                                ],
+                                className="flip-card",
+                            ),
+                        ],
+                        className="flip-grid",
+                    ),
+                ],
+                className="card",
+            ),
+            # Bloque 4: otros patrones de riesgo
+            html.Div(
+                [
+                    html.H2("Patrones de reserva con mayor riesgo de cancelación"),
+                    html.P(
+                        "Además del tipo de cliente, algunos patrones de reserva "
+                        "concentran más probabilidad de cancelación.",
+                        className="app-subtitle",
+                    ),
+                    html.Div(
+                        [
+                            # Lead time alto
+                            html.Div(
+                                [
+                                    html.Div(
+                                        [
+                                            html.Div(
+                                                [
+                                                    html.H3("Lead time muy alto"),
+                                                    html.P(
+                                                        "Reservas hechas con mucha antelación."
+                                                    ),
+                                                ],
+                                                className="flip-card-face",
+                                            ),
+                                            html.Div(
+                                                [
+                                                    html.H3("Recomendación"),
+                                                    html.P(
+                                                        "Programar recordatorios automáticos "
+                                                        "y ofrecer upgrades a tarifas menos flexibles "
+                                                        "cerca de la fecha de llegada."
+                                                    ),
+                                                ],
+                                                className="flip-card-face",
+                                            ),
+                                        ],
+                                        className="flip-card-inner gradient-teal",
+                                    )
+                                ],
+                                className="flip-card",
+                            ),
+                            # ADR bajo + muchas noches
+                            html.Div(
+                                [
+                                    html.Div(
+                                        [
+                                            html.Div(
+                                                [
+                                                    html.H3(
+                                                        "ADR bajo + muchas noches"
+                                                    ),
+                                                    html.P(
+                                                        "Reservas largas a precio muy bajo."
+                                                    ),
+                                                ],
+                                                className="flip-card-face",
+                                            ),
+                                            html.Div(
+                                                [
+                                                    html.H3("Recomendación"),
+                                                    html.P(
+                                                        "Revisar las condiciones, aplicar "
+                                                        "mínimos de estancia y políticas de "
+                                                        "cancelación más estrictas."
+                                                    ),
+                                                ],
+                                                className="flip-card-face",
+                                            ),
+                                        ],
+                                        className="flip-card-inner gradient-pink",
+                                    )
+                                ],
+                                className="flip-card",
+                            ),
+                            # Muchas cancelaciones previas
+                            html.Div(
+                                [
+                                    html.Div(
+                                        [
+                                            html.Div(
+                                                [
+                                                    html.H3(
+                                                        "Muchas cancelaciones previas"
+                                                    ),
+                                                    html.P(
+                                                        "Clientes con historial de cancelar a menudo."
+                                                    ),
+                                                ],
+                                                className="flip-card-face",
+                                            ),
+                                            html.Div(
+                                                [
+                                                    html.H3("Recomendación"),
+                                                    html.P(
+                                                        "Solicitar prepago parcial o garantía "
+                                                        "adicional en futuras reservas."
+                                                    ),
+                                                ],
+                                                className="flip-card-face",
+                                            ),
+                                        ],
+                                        className="flip-card-inner gradient-yellow",
+                                    )
+                                ],
+                                className="flip-card",
+                            ),
+                        ],
+                        className="flip-grid",
+                    ),
                 ],
                 className="card",
             ),
@@ -328,17 +625,12 @@ def layout_recommendations(df: pd.DataFrame) -> html.Div:
     )
 
 
-# ======================================================================
-#  Layout general con TABS normales
-# ======================================================================
+# -------------------------------------------------
+# Layout general
+# -------------------------------------------------
 def create_layout(df: pd.DataFrame) -> html.Div:
-
     return html.Div(
         [
-            # Overlay de aviso de cancelación (vacío al principio)
-            html.Div(id="cancel-overlay"),
-
-            # Banner
             html.Div(
                 [
                     html.H1("CancelGuard", className="header-title"),
@@ -349,7 +641,6 @@ def create_layout(df: pd.DataFrame) -> html.Div:
                 ],
                 className="header-banner",
             ),
-
             dcc.Tabs(
                 id="tabs",
                 value="tab-explore",
@@ -377,12 +668,11 @@ def create_layout(df: pd.DataFrame) -> html.Div:
     )
 
 
-# ======================================================================
-#  CALLBACKS
-# ======================================================================
+# -------------------------------------------------
+# Callbacks
+# -------------------------------------------------
 def register_callbacks(app, df: pd.DataFrame, ml_model):
-
-    # ---------- Exploración: histograma ----------
+    # Exploración
     @app.callback(
         Output("hist-cancellations", "figure"),
         Input("numeric-col", "value"),
@@ -401,7 +691,6 @@ def register_callbacks(app, df: pd.DataFrame, ml_model):
         )
         return fig
 
-    # ---------- Exploración: barras ----------
     @app.callback(
         Output("bar-cancellations", "figure"),
         Input("cat-col", "value"),
@@ -416,18 +705,17 @@ def register_callbacks(app, df: pd.DataFrame, ml_model):
             .reset_index()
             .sort_values("is_canceled", ascending=False)
         )
-
         fig = px.bar(
             grouped,
             x=cat_col,
             y="is_canceled",
             title=f"Tasa de cancelación por {pretty_label(cat_col)}",
         )
+        fig.update_yaxes(title="Proporción cancelada")
+        fig.update_xaxes(tickangle=-25)
         return fig
 
-    # ==================================================================
-    # PREDICCIÓN + RESET + OVERLAY
-    # ==================================================================
+    # Predicción + reset en un solo callback
     @app.callback(
         [
             Output("input-lead-time", "value"),
@@ -440,12 +728,8 @@ def register_callbacks(app, df: pd.DataFrame, ml_model):
             Output("input-market-segment", "value"),
             Output("input-arrival-month", "value"),
             Output("prediction-output", "children"),
-            Output("cancel-overlay", "children"),
         ],
-        [
-            Input("btn-predict", "n_clicks"),
-            Input("btn-reset", "n_clicks"),
-        ],
+        [Input("btn-predict", "n_clicks"), Input("btn-reset", "n_clicks")],
         [
             State("input-lead-time", "value"),
             State("input-total-nights", "value"),
@@ -472,26 +756,13 @@ def register_callbacks(app, df: pd.DataFrame, ml_model):
         market_segment,
         arrival_month,
     ):
-
         ctx = dash.callback_context
         if not ctx.triggered:
-            return (
-                lead_time,
-                total_nights,
-                adr,
-                special_requests,
-                hotel,
-                deposit_type,
-                customer_type,
-                market_segment,
-                arrival_month,
-                dash.no_update,
-                dash.no_update,
-            )
+            return dash.no_update
 
         triggered = ctx.triggered[0]["prop_id"].split(".")[0]
 
-        # ============ RESET ============
+        # RESET
         if triggered == "btn-reset":
             mean_lead_time = int(df["lead_time"].mean())
             mean_total_nights = int(
@@ -509,11 +780,10 @@ def register_callbacks(app, df: pd.DataFrame, ml_model):
                 df["customer_type"].dropna().unique()[0],
                 df["market_segment"].dropna().unique()[0],
                 df["arrival_date_month"].dropna().unique()[0],
-                None,  # sin mensaje
-                None,  # sin overlay
+                None,
             )
 
-        # ============ PREDICCIÓN ============
+        # PREDICCIÓN
         data = {
             "lead_time": lead_time,
             "total_nights": total_nights,
@@ -529,7 +799,10 @@ def register_callbacks(app, df: pd.DataFrame, ml_model):
         try:
             pred, prob = model_module.predict_cancellation(ml_model, data)
         except Exception:
-            msg = html.P("Error al generar la predicción.", style={"color": "red"})
+            msg = html.P(
+                "Error al generar la predicción.",
+                style={"color": "red"},
+            )
             return (
                 lead_time,
                 total_nights,
@@ -541,62 +814,29 @@ def register_callbacks(app, df: pd.DataFrame, ml_model):
                 market_segment,
                 arrival_month,
                 msg,
-                None,
             )
 
         etiqueta = "SE CANCELA" if pred == 1 else "NO SE CANCELA"
         color = "red" if pred == 1 else "green"
 
-        # Mensaje principal dentro de la tarjeta
-        msg_children = [
-            html.P(
-                f"Predicción: {etiqueta}",
-                style={"color": color, "fontWeight": "bold", "fontSize": "18px"},
-            ),
-            html.P(f"Probabilidad: {prob*100:.2f}%"),
-        ]
-
-        overlay_children = None
-
-        if pred == 1:
-            # Aviso naranja dentro de la tarjeta
-            msg_children.append(
-                html.Div(
-                    "⚠️ Esta reserva tiene alta probabilidad de cancelarse. "
-                    "Consulta la pestaña «Recomendaciones» para estrategias de reducción.",
-                    style={
-                        "marginTop": "12px",
-                        "padding": "10px 14px",
-                        "borderRadius": "8px",
-                        "backgroundColor": "#fff4e6",
-                        "border": "1px solid #ffcc99",
-                        "color": "#b55300",
-                        "fontWeight": "500",
-                    },
-                )
+        warning = None
+        if prob >= 0.6:
+            warning = html.Div(
+                "⚠️ Esta reserva tiene alta probabilidad de cancelarse. "
+                "Consulta la pestaña «Recomendaciones» para estrategias de reducción.",
+                className="alert-banner",
             )
 
-            # Overlay a pantalla completa (animado por CSS)
-            overlay_children = html.Div(
-                [
-                    html.Div(
-                        [
-                            html.Div(
-                                "⚠️ Alta probabilidad de cancelación",
-                                className="overlay-title",
-                            ),
-                            html.Div(
-                                "Revisa la pestaña «Recomendaciones» para actuar sobre esta reserva.",
-                                className="overlay-text",
-                            ),
-                        ],
-                        className="cancel-overlay-box",
-                    )
-                ],
-                className="cancel-overlay",
-            )
-
-        msg = html.Div(msg_children)
+        msg = html.Div(
+            [
+                html.P(
+                    f"Predicción: {etiqueta}",
+                    style={"color": color, "fontWeight": "bold"},
+                ),
+                html.P(f"Probabilidad: {prob*100:.2f}%"),
+                warning,
+            ]
+        )
 
         return (
             lead_time,
@@ -609,5 +849,4 @@ def register_callbacks(app, df: pd.DataFrame, ml_model):
             market_segment,
             arrival_month,
             msg,
-            overlay_children,
         )
