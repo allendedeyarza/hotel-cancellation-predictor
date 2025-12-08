@@ -33,4 +33,4 @@ server = app.server  # para despliegues futuros
 
 if __name__ == "__main__":
     print("🚀 Levantando servidor en http://127.0.0.1:8060 ...")
-    app.run_server(debug=False, port=8060)
+    app.run_server(debug=True, port=8060)

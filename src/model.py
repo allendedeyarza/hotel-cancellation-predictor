@@ -2,15 +2,11 @@
 """
 Módulo de modelo para CancelGuard.
 
-Entrenamos un árbol de decisión a partir de los datos cada vez que se
-arranca la aplicación (cuando se llama a load_model en app.py) y
-definimos la función de inferencia predict_cancellation.
+Aquí entrenamos un árbol de decisión sencillo cada vez que se arranca la
+aplicación (cuando se llama a load_model en app.py) y definimos la
+función de inferencia predict_cancellation.
 
-El modelo solo utiliza 4 variables numéricas:
-- lead_time
-- total_nights
-- adr
-- total_of_special_requests
+No se usa ningún .joblib: todo vive dentro de src/model.py.
 """
 
 from __future__ import annotations
@@ -80,11 +76,9 @@ def load_model() -> CancelGuardModel:
         stratify=y,
     )
 
-    # Árbol un poco más complejo y equilibrado
     tree = DecisionTreeClassifier(
-        max_depth=8,
-        min_samples_leaf=30,
-        class_weight="balanced",
+        max_depth=5,
+        min_samples_leaf=50,
         random_state=42,
     )
     tree.fit(X_train, y_train)
